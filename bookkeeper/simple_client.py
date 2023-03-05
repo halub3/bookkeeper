@@ -2,16 +2,19 @@
 Простой тестовый скрипт для терминала
 """
 
+from typing import Any
 from bookkeeper.models.category import Category
 from bookkeeper.models.expense import Expense
+from bookkeeper.models.budget import Budget
 # from bookkeeper.repository.memory_repository import MemoryRepository
 from bookkeeper.repository.sqlite_repository import SQLiteRepository
-from bookkeeper.utils import read_tree
+# from bookkeeper.utils import read_tree
 
 DB_FILE = 'databases/main.db'
 
 cat_repo = SQLiteRepository[Category](DB_FILE, Category)
 exp_repo = SQLiteRepository[Expense](DB_FILE, Expense)
+bud_repo = SQLiteRepository[Expense](DB_FILE, Budget)
 
 cats = '''
 продукты
@@ -23,7 +26,13 @@ cats = '''
 одежда
 '''.splitlines()
 
-Category.create_from_tree(read_tree(cats), cat_repo)
+# Category.create_from_tree(read_tree(cats), cat_repo)
+
+commands: dict[str, Any] = {
+    'категории': cat_repo,
+    'расходы': exp_repo,
+    'бюджет': bud_repo
+}
 
 while True:
     try:
@@ -32,10 +41,9 @@ while True:
         break
     if not cmd:
         continue
-    if cmd == 'категории':
-        print(*cat_repo.get_all(), sep='\n')
-    elif cmd == 'расходы':
-        print(*exp_repo.get_all(), sep='\n')
+    if cmd in commands:
+        repo = commands[cmd]
+        print(*repo.get_all(), sep='\n')
     elif cmd[0].isdecimal():
         amount, name = cmd.split(maxsplit=1)
         try:

@@ -53,6 +53,11 @@ poetry run flake8 bookkeeper
 poetry run pytest --cov-report html
 ```
 
+Запуск simple_client
+```commandline
+poetry run python bookkeeper/simple_client.py
+```
+
 При проверке работы будут использоваться эти же инструменты с теми же настройками.
 
 (+) Задача первого этапа:
