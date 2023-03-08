@@ -55,6 +55,7 @@ poetry run pytest --cov-report html
 
 Запуск simple_client
 ```commandline
+export PATH="$HOME/.local/bin:$PATH"
 poetry run python bookkeeper/simple_client.py
 ```
 
