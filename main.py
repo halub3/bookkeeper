@@ -23,4 +23,4 @@ if __name__ == '__main__':
 
     window = Bookkeeper(view, cat_repo, exp_repo, bud_repo)  # TODO: передать три репозитория
     window.show()
-    app.exec_()
+    app.exec()
