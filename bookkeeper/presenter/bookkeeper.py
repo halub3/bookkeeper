@@ -47,8 +47,13 @@ class Bookkeeper:
         # print(f"Budget with data {budget[1]} and pk {budget[0]}")
         if budget[0] is not None:
             obj = self.bud_repo.get(budget[0])
+            if obj.amount == budget[1]:  # может приходить "ложный" сигнал от itemChanged при построении таблицы
+                return
             obj.amount = budget[1]
             self.bud_repo.update(obj)
+            self.bud_data = self.bud_repo.get_all()
+            self.exp_data = self.exp_repo.get_all()
+            self.view.set_budget_table(self.exp_data, self.bud_data)
 
     def update_expense_data(self):
         self.exp_data = self.exp_repo.get_all()

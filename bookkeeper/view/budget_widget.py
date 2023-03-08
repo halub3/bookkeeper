@@ -74,7 +74,7 @@ class BudgetWidget(QtWidgets.QTableWidget):
         self.budget_table.item(2, 2).setFlags(~QtCore.Qt.ItemFlag.ItemIsEditable)
 
 
-    def get_changed_budget_pk(self, item):
+    def get_changed_budget(self, item):
         return [item.data(1), item.data(0)]
 
     # def update_budget_item(self, item):

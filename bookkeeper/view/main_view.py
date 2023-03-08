@@ -46,7 +46,6 @@ class MainWindow(QtWidgets.QMainWindow):
         for data in exp_data:
             date = datetime.strptime(data.expense_date, '%Y-%m-%d %H:%M:%S')
             diff_days = (datetime.now() - date).days
-            diff_month = (datetime.now() - date).month
             if diff_days == 0:
                 amount_dict[1] += data.amount
                 amount_dict[7] += data.amount
@@ -54,7 +53,7 @@ class MainWindow(QtWidgets.QMainWindow):
             elif 0 < diff_days < 7:
                 amount_dict[7] += data.amount
                 amount_dict[30] += data.amount
-            elif diff_month == 0:
+            elif diff_days < 30:
                 amount_dict[30] += data.amount
         self.budget_widget.set_budget_table(amount_dict, limit_dict)
 
@@ -66,6 +65,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def on_budget_item_changed(self, slot):
         self.budget_widget.budget_table.itemChanged.connect(slot)
+
+        # self.budget_widget.budget_table.currentItemChanged.connect(slot)
 
     def get_selected_cat(self):
         return self.button_widget.get_selected_cat()
@@ -80,6 +81,6 @@ class MainWindow(QtWidgets.QMainWindow):
         return self.button_widget.get_datetime()
 
     def get_changed_budget(self, item):
-        return self.budget_widget.get_changed_budget_pk(item)
+        return self.budget_widget.get_changed_budget(item)
 
 
