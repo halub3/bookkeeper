@@ -36,17 +36,9 @@ class BudgetWidget(QtWidgets.QTableWidget):
         )
 
         header = self.budget_table.horizontalHeader()
-        header.setSectionResizeMode(
-            0, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(
-            1, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(
-            2, QtWidgets.QHeaderView.Stretch)
-
-        # self.budget_table.setEditTriggers(
-        #     QtWidgets.QAbstractItemView.NoEditTriggers)
-
-        # set_data(budget_table, self.data)
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
 
         layout.addWidget(self.budget_table)
         self.setLayout(layout)
@@ -72,7 +64,6 @@ class BudgetWidget(QtWidgets.QTableWidget):
         self.budget_table.item(0, 2).setFlags(~QtCore.Qt.ItemFlag.ItemIsEditable)
         self.budget_table.item(1, 2).setFlags(~QtCore.Qt.ItemFlag.ItemIsEditable)
         self.budget_table.item(2, 2).setFlags(~QtCore.Qt.ItemFlag.ItemIsEditable)
-
 
     def get_changed_budget(self, item):
         return [item.data(1), item.data(0)]

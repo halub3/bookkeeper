@@ -8,6 +8,7 @@ DB_FILE = "databases/test_sql.db"
 TEST_FIELD_INT = 11
 TEST_FIELD_STR = "test field value"
 
+
 @pytest.fixture
 def create_bd():
     with sqlite3.connect(DB_FILE) as con:
@@ -26,6 +27,7 @@ def custom_class():
         field_int: int = TEST_FIELD_INT
         field_str: str = TEST_FIELD_STR
         pk: int = 0
+
     return Custom
 
 
@@ -33,20 +35,21 @@ def custom_class():
 def repo(custom_class, create_bd):
     return SQLiteRepository(db_file=DB_FILE, cls=custom_class)
 
+
 def test_crud(repo, custom_class):
-    #ADD
+    # ADD
     obj_add = custom_class()
     pk = repo.add(obj_add)
     assert obj_add.pk == pk
 
-    #GET
+    # GET
     obj_get = repo.get(pk)
     assert obj_get is not None
     assert obj_get.pk == pk
     assert obj_get.field_int == obj_add.field_int
     assert obj_get.field_str == obj_add.field_str
 
-    #UPDATE
+    # UPDATE
     obj_upd = custom_class(100, "new str val", pk)
     repo.update(obj_upd)
     obj_get_upd = repo.get(pk)
@@ -54,9 +57,10 @@ def test_crud(repo, custom_class):
     assert obj_get_upd.field_str == obj_upd.field_str
     assert obj_get_upd.field_int == obj_upd.field_int
 
-    #DELETE
+    # DELETE
     repo.delete(pk)
     assert repo.get(pk) is None
+
 
 def test_cannot_add_with_pk(repo, custom_class):
     obj = custom_class()
@@ -87,6 +91,7 @@ def test_get_all(repo, custom_class):
         repo.add(o)
     assert repo.get_all() == objects
 
+
 def test_get_all_with_condition(repo, custom_class):
     objs_add_all = []
     str_to_find = "founded str"
@@ -102,8 +107,3 @@ def test_get_all_with_condition(repo, custom_class):
     obj_none = repo.get_all(where_fail)
     assert obj_none == []
     assert objs_get_all == objs_add_all
-
-
-
-
-

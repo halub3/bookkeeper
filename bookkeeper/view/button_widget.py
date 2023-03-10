@@ -3,6 +3,14 @@ from PySide6 import QtCore, QtWidgets
 from datetime import datetime
 
 
+class RowButton(QtWidgets.QPushButton):
+    def __init__(self, item, signal, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.item = item
+        self.signal = signal
+        self.clicked.connect(lambda _: self.signal.emit(self.item))
+
+
 class ButtonWidget(QtWidgets.QTableWidget):
 
     def __init__(self, *args, **kwargs):
@@ -46,14 +54,15 @@ class ButtonWidget(QtWidgets.QTableWidget):
         self.setLayout(layout)
 
     def set_category_dropdown(self, data):
+        self.category_dropdown.clear()
         for tup in data:
-            self.category_dropdown.addItem(tup[1], tup[0])
+            self.category_dropdown.addItem(tup[1].capitalize(), tup[0])
 
     def get_amount(self) -> float:
         return float(self.amount_line_edit.text())  # TODO: обработка исключений
 
     def get_selected_cat(self) -> int:
-        return self.category_dropdown.itemData(self.category_dropdown.currentIndex())
+        return int(self.category_dropdown.itemData(self.category_dropdown.currentIndex()))
 
     def get_comment(self) -> str:
         comment = self.comment_label_edit.text()
@@ -63,6 +72,10 @@ class ButtonWidget(QtWidgets.QTableWidget):
 
     def get_datetime(self) -> str:
         return self.datetime_label_edit.text()
+
+    def drop_input(self):
+        self.amount_line_edit.clear()
+        self.comment_label_edit.clear()
 
 
 

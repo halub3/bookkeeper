@@ -1,4 +1,5 @@
 from bookkeeper.models.expense import Expense
+from bookkeeper.models.category import Category
 
 
 class Bookkeeper:
@@ -16,9 +17,10 @@ class Bookkeeper:
 
         self.view.on_expense_add_button_clicked(self.handle_expense_add_button_clicked)
         self.view.on_budget_item_changed(self.handle_budget_item_changed)
-
-        # self.view.update_expense_data(self.exp_data)
-        # self.view.init_category_data(cat_data_list)
+        self.view.on_category_edit_button_clicked(self.handle_category_edit_button_clicked)
+        self.view.on_expense_delete_button_clicked(self.handle_expense_delete_button_clicked)
+        self.view.on_category_add_button_clicked(self.handle_category_add_button_clicked)
+        self.view.on_category_delete_button_clicked(self.handle_category_delete_button_clicked)
 
     def show(self):
         self.view.show()
@@ -41,10 +43,45 @@ class Bookkeeper:
         self.exp_repo.add(exp)
         self.update_expense_data()
         self.update_budget_data()
+        self.view.drop_expense_input()
+
+    def handle_category_edit_button_clicked(self):
+        self.view.open_category_window()
+        self.cat_data = self.cat_repo.get_all()
+        self.view.set_category_table(self.cat_data)
+        self.view.set_parent_dropdown(self.cat_data)
+
+    def handle_expense_delete_button_clicked(self, pk):
+        self.exp_repo.delete(pk)
+        self.update_expense_data()
+        self.update_budget_data()
+
+    def handle_category_delete_button_clicked(self, pk):
+        cat = self.cat_repo.get(pk)
+        if not cat:
+            raise KeyError('Cannot find category to delete')
+        childs = self.cat_repo.get_all({"parent": pk})
+        expenses = self.exp_repo.get_all({"category": pk})
+        if cat.parent:
+            for child in childs:
+                child.parent = cat.parent
+                self.cat_repo.update(child)
+            for exp in expenses:
+                exp.category = cat.parent
+                self.exp_repo.update(exp)
+        else:
+            for exp in expenses:
+                self.exp_repo.delete(exp.pk)
+            for child in childs:
+                child.parent = None
+                self.cat_repo.update(child)
+            self.update_budget_data()
+        self.cat_repo.delete(pk)
+        self.update_expense_data()
+        self.update_category_data()
 
     def handle_budget_item_changed(self, item):
         budget = self.view.get_changed_budget(item)
-        # print(f"Budget with data {budget[1]} and pk {budget[0]}")
         if budget[0] is not None:
             obj = self.bud_repo.get(budget[0])
             if obj.amount == budget[1]:  # может приходить "ложный" сигнал от itemChanged при построении таблицы
@@ -55,11 +92,32 @@ class Bookkeeper:
             self.exp_data = self.exp_repo.get_all()
             self.view.set_budget_table(self.exp_data, self.bud_data)
 
+    def handle_category_add_button_clicked(self):
+        cat_name = self.view.get_added_category_name()
+        parent_pk = self.view.get_selected_category_parent()
+        if cat_name == '':
+            return
+        if parent_pk == -1:
+            cat_new = Category(name=cat_name)
+        else:
+            cat_new = Category(name=cat_name, parent = parent_pk)
+        self.cat_repo.add(cat_new)
+        self.update_category_data()
+
     def update_expense_data(self):
         self.exp_data = self.exp_repo.get_all()
+        self.cat_data = self.cat_repo.get_all()
         self.view.set_expense_table(self.exp_data, self.cat_data)
 
     def update_budget_data(self):
         self.bud_data = self.bud_repo.get_all()
         self.exp_data = self.exp_repo.get_all()
         self.view.set_budget_table(self.exp_data, self.bud_data)
+
+    def update_category_data(self):
+        self.cat_data = self.cat_repo.get_all()
+        self.view.set_category_table(self.cat_data)
+        self.view.set_parent_dropdown(self.cat_data)
+        self.view.set_category_dropdown(self.cat_data)
+
+
