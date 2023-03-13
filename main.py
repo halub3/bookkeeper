@@ -15,12 +15,11 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     view = MainWindow()
-    # model = None  # TODO: здесь должна быть модель
 
     cat_repo = SQLiteRepository[Category](DB_NAME, Category)
     exp_repo = SQLiteRepository[Expense](DB_NAME, Expense)
     bud_repo = SQLiteRepository[Budget](DB_NAME, Budget)
 
-    window = Bookkeeper(view, cat_repo, exp_repo, bud_repo)  # TODO: передать три репозитория
+    window = Bookkeeper(view, cat_repo, exp_repo, bud_repo)
     window.show()
     app.exec()

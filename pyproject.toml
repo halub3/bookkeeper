@@ -11,6 +11,8 @@ packages = [{include = "bookkeeper"}]
 python = "<3.12, >=3.8.1"
 pytest-cov = "^4.0.0"
 pyside6 = "^6.4.2"
+pytest-qt = "^4.2.0"
+pytest-env = "^0.8.1"
 
 
 [tool.poetry.group.dev.dependencies]
